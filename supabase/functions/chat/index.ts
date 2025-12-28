@@ -44,23 +44,39 @@ serve(async (req) => {
       body.session_id = session_id;
     }
 
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${SUBFEED_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
+    // Helper function to call Subfeed API
+    const callSubfeed = async () => {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUBFEED_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Subfeed API error:', response.status, errorText);
-      throw new Error(`Subfeed API Error: ${response.status}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Subfeed API error:', response.status, errorText);
+        throw new Error(`Subfeed API Error: ${response.status}`);
+      }
+
+      return response.json();
+    };
+
+    // First attempt
+    let data = await callSubfeed();
+    console.log('Subfeed response (attempt 1):', data);
+
+    // Check if response is empty and retry once
+    const responseText = data?.data?.response ?? data?.response ?? '';
+    if (!responseText || responseText.trim() === '') {
+      console.log('Empty response received, retrying...');
+      // Small delay before retry
+      await new Promise(resolve => setTimeout(resolve, 500));
+      data = await callSubfeed();
+      console.log('Subfeed response (attempt 2):', data);
     }
-
-    const data = await response.json();
-    console.log('Subfeed response:', data);
 
     return new Response(
       JSON.stringify(data),
