@@ -25,7 +25,9 @@ export function ChatMessage({ message, onRetry, hasError }: ChatMessageProps) {
   };
 
   // Simple markdown rendering for code blocks
-  const renderContent = (content: string) => {
+  const renderContent = (content: string | undefined) => {
+    if (!content) return '';
+    
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
