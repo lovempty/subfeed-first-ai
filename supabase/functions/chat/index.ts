@@ -55,6 +55,8 @@ serve(async (req) => {
         body: JSON.stringify(body),
       });
 
+      console.log('Subfeed API response status:', response);
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Subfeed API error:', response.status, errorText);
