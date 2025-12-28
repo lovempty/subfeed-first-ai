@@ -66,19 +66,8 @@ serve(async (req) => {
       return response.json();
     };
 
-    // First attempt
-    let data = await callSubfeed();
-    console.log('Subfeed response (attempt 1):', data);
-
-    // Check if response is empty and retry once
-    const responseText = data?.data?.response ?? data?.response ?? '';
-    if (!responseText || responseText.trim() === '') {
-      console.log('Empty response received, retrying...');
-      // Small delay before retry
-      await new Promise(resolve => setTimeout(resolve, 500));
-      data = await callSubfeed();
-      console.log('Subfeed response (attempt 2):', data);
-    }
+    const data = await callSubfeed();
+    console.log('NEW Subfeed API response:', data);
 
     return new Response(
       JSON.stringify(data),
