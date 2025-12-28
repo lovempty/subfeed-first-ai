@@ -21,7 +21,6 @@ serve(async (req) => {
     }
 
     const { message, session_id, action } = await req.json();
-    console.log('Received request:', { message, session_id, action });
 
     // Handle clear history action
     if (action === 'clear') {
@@ -37,7 +36,6 @@ serve(async (req) => {
     }
 
     const API_URL = `https://api.subfeed.app/v1/entity/${SUBFEED_ENTITY_ID}/chat`;
-    console.log('Calling Subfeed API:', API_URL);
 
     const body: Record<string, string> = { message };
     if (session_id) {
@@ -55,8 +53,6 @@ serve(async (req) => {
         body: JSON.stringify(body),
       });
 
-      console.log('Subfeed API response status:', response);
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Subfeed API error:', response.status, errorText);
@@ -66,6 +62,7 @@ serve(async (req) => {
       return response.json();
     };
 
+    console.log(`Bearer ${SUBFEED_API_KEY}`)
     const data = await callSubfeed();
     console.log('NEW Subfeed API response:', data);
 
